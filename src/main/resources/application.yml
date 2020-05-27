@@ -31,6 +31,8 @@ spring:
 
 server:
   port: 10002
+  servlet:
+    context-path: /
 
 eureka:
   # 事件通知
@@ -44,6 +46,8 @@ eureka:
     preferIpAddress: true
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 15
+    status-page-url-path: ${server.servlet.context-path}/actuator/info
+    health-check-url-path: ${server.servlet.context-path}/actuator/health
   client:
     hostname: localhost
     service-url:
