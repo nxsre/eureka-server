@@ -10,11 +10,12 @@ eureka:
     fetchRegistry: false # 是否在本地缓存注册表信息，默认为true，当前为单点eureka server，不需要从其他eureka除获取注册表信息，更谈不上缓存，故配置为false
   #server:
     # 在服务器接收请求之前等待的初始时间，默认等待5min（John Carnell）
-    #waitTimeInMsWhenSyncEmpty: 5 # John说开发时最好注释此配置，服务注册需要3次心跳，每次10s，也就是30s才能显示在eureka。但是为什么我这里马上就显示呢？
+    #waitTimeInMsWhenSyncEmpty: 5
 
 
 ---
-# 是否启用身份验证
+# 是否启用身份验证, 默认启用
+# 此选项非 springboot 的系统配置，在 src/main/java/com/example/eureka/config/WebSecurityConfig.java 中引用
 security:
   enabled: false
 
@@ -32,15 +33,21 @@ server:
   port: 10002
 
 eureka:
+  # 事件通知
+  notify:
+    http:
+      url: http://127.0.0.1:8888
+
   instance:
-    hostname: 192.168.99.200
+    hostname: localhost
     preferIpAddress: true
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 15
   client:
+    hostname: localhost
     service-url:
-      #defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
-      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/,http://10.2.20.63:10001/eureka/
+      defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/
+      #defaultZone: http://${eureka.instance.hostname}:${server.port}/eureka/,http://10.2.20.63:10001/eureka/
       #defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@${eureka.instance.hostname}:${server.port}/eureka/
     healthcheck:
       enabled: true
@@ -52,7 +59,7 @@ eureka:
   server:
      # eureka server刷新readCacheMap的时间，注意，client读取的是readCacheMap，这个时间决定了多久会把readWriteCacheMap的缓存更新到readCacheMap上
      # 默认30秒，eclipse提示默认0应该是错误的，源代码中responseCacheUpdateIntervalMs = 30 * 1000。
-     response-cache-update-interval-ms: 3000 # 网上很多专家的博客错误写成responseCacheUpdateInvervalMs，请注意。这里配置为3秒。
+     response-cache-update-interval-ms: 3000 # 这里配置为3秒。
      # eureka server缓存readWriteCacheMap失效时间，这个只有在这个时间过去后缓存才会失效，失效前不会更新，
      # 过期后从registry重新读取注册服务信息，registry是一个ConcurrentHashMap。
      # 由于启用了evict其实就用不太上改这个配置了，默认180s
