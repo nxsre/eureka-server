@@ -8,10 +8,15 @@ eureka:
     # 单点时，如果registerWithEureka配置为true，则eureka server会报错Cannot execute request on any known server
     registerWithEureka: false # 是否注册到eureka服务，默认为true，当前已为eureka server，且单点eureka，故配置为false
     fetchRegistry: false # 是否在本地缓存注册表信息，默认为true，当前为单点eureka server，不需要从其他eureka除获取注册表信息，更谈不上缓存，故配置为false
-  #server:
+    #server:
     # 在服务器接收请求之前等待的初始时间，默认等待5min（John Carnell）
     #waitTimeInMsWhenSyncEmpty: 5
-
+server:
+  tomcat:
+    max-connections: 32768
+    accept-count: 500
+    min-spare-threads: 50
+    max-threads: 1000
 
 ---
 # 是否启用身份验证, 默认启用
@@ -20,8 +25,9 @@ security:
   enabled: false
 
 logging:
-#  config: classpath:logback-${spring.profiles.active}.xml
+  #  config: classpath:logback-${spring.profiles.active}.xml
   config: file:src/main/resources/logback-${spring.profiles.active}.xml
+
 spring:
   application:
     name: cloud-eureka
@@ -42,11 +48,13 @@ eureka:
   notify:
     http:
       url: http://127.0.0.1:8888/eureka-event
+#      async: false # 默认 true，即使用异步调用
 
   instance:
     hostname: localhost
     instanceId: ${eureka.instance.hostname}:${spring.application.name}:${spring.application.instance_id:${server.port}}
     preferIpAddress: true
+
     leaseRenewalIntervalInSeconds: 5
     leaseExpirationDurationInSeconds: 15
     status-page-url-path: ${server.servlet.context-path}/actuator/info
@@ -65,17 +73,18 @@ eureka:
     initial-instance-info-replication-interval-seconds: 30
 
   server:
-     # eureka server刷新readCacheMap的时间，注意，client读取的是readCacheMap，这个时间决定了多久会把readWriteCacheMap的缓存更新到readCacheMap上
-     # 默认30秒，eclipse提示默认0应该是错误的，源代码中responseCacheUpdateIntervalMs = 30 * 1000。
-     response-cache-update-interval-ms: 3000 # 这里配置为3秒。
-     # eureka server缓存readWriteCacheMap失效时间，这个只有在这个时间过去后缓存才会失效，失效前不会更新，
-     # 过期后从registry重新读取注册服务信息，registry是一个ConcurrentHashMap。
-     # 由于启用了evict其实就用不太上改这个配置了，默认180s
-     responseCacheAutoExpirationInSeconds: 30
-     peer-eureka-nodes-update-interval-ms: 6000 # 指定peerUpdateTask调度的时间间隔，用于从配置文件刷新peerEurekaNodes节点的配置信息， 单位毫秒,默认10分钟
-     # 启用主动失效，并且每次主动失效检测间隔为3s。源码evictionIntervalTimerInMs = 60 * 1000，默认一分钟。
-     # 需要注意的是该配置会打印INFO日志，增加info日志量，修改后从每60秒打印一次变成3秒打印一次。
-     evictionIntervalTimerInMs: 3000 # 注意不要写成EvictionIntervalTimerInMs，yml大小写敏感。
+    peer-node-read-timeout-ms: 3000
+    # eureka server刷新readCacheMap的时间，注意，client读取的是readCacheMap，这个时间决定了多久会把readWriteCacheMap的缓存更新到readCacheMap上
+    # 默认30秒，eclipse提示默认0应该是错误的，源代码中responseCacheUpdateIntervalMs = 30 * 1000。
+    response-cache-update-interval-ms: 3000 # 这里配置为3秒。
+    # eureka server缓存readWriteCacheMap失效时间，这个只有在这个时间过去后缓存才会失效，失效前不会更新，
+    # 过期后从registry重新读取注册服务信息，registry是一个ConcurrentHashMap。
+    # 由于启用了evict其实就用不太上改这个配置了，默认180s
+    responseCacheAutoExpirationInSeconds: 30
+    peer-eureka-nodes-update-interval-ms: 6000 # 指定peerUpdateTask调度的时间间隔，用于从配置文件刷新peerEurekaNodes节点的配置信息， 单位毫秒,默认10分钟
+    # 启用主动失效，并且每次主动失效检测间隔为3s。源码evictionIntervalTimerInMs = 60 * 1000，默认一分钟。
+    # 需要注意的是该配置会打印INFO日志，增加info日志量，修改后从每60秒打印一次变成3秒打印一次。
+    evictionIntervalTimerInMs: 3000 # 注意不要写成EvictionIntervalTimerInMs，yml大小写敏感。
      
 
 

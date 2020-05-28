@@ -134,6 +134,8 @@
           <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpcore:4.4.13" />
           <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpclient:4.5.12" />
           <element id="library" level="project" name="Maven: commons-codec:commons-codec:1.11" />
+          <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpasyncclient:4.1.4" />
+          <element id="library" level="project" name="Maven: org.apache.httpcomponents:httpcore-nio:4.4.13" />
           <element id="library" level="project" name="Maven: org.projectlombok:lombok:1.18.12" />
         </element>
       </element>

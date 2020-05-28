@@ -1,4 +1,4 @@
-package com.example.eureka.config;
+package com.example.eurekaServer.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
