@@ -19,6 +19,9 @@ eureka:
 security:
   enabled: false
 
+logging:
+#  config: classpath:logback-${spring.profiles.active}.xml
+  config: file:src/main/resources/logback-${spring.profiles.active}.xml
 spring:
   application:
     name: cloud-eureka
@@ -38,7 +41,7 @@ eureka:
   # 事件通知
   notify:
     http:
-      url: http://127.0.0.1:8888
+      url: http://127.0.0.1:8888/eureka-event
 
   instance:
     hostname: localhost

@@ -1,6 +1,5 @@
 package com.example.eureka.listener;
 
-import com.netflix.appinfo.InstanceInfo;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
@@ -16,6 +15,8 @@ import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.IOException;
 
+import lombok.extern.log4j.Log4j2;
+
 /**
  * @Classname EurekaStateChangeListener
  * @Description 监听服务上下线
@@ -23,17 +24,21 @@ import java.io.IOException;
  * @Created by gumei
  * @Author: lepua
  */
+@Log4j2
 @Component
 public class EurekaStateChangeListener {
     @Value("${eureka.notify.http.url}")
     private String notifyUrl;
+
+    public static final org.apache.logging.log4j.Logger log =
+            org.apache.logging.log4j.LogManager.getLogger(EurekaStateChangeListener.class);
 
     @EventListener
     public void listen(EurekaInstanceCanceledEvent event) {
         Gson gson = new Gson();
         String json = gson.toJson(event);
         send(json);
-//        System.out.println(eurekaInstanceCanceledEvent.getServerId() + "\t" + eurekaInstanceCanceledEvent.getAppName() + "服务下线");
+        log.info("服务下线 " + json);
     }
 
     @EventListener
@@ -41,8 +46,7 @@ public class EurekaStateChangeListener {
         Gson gson = new Gson();
         String json = gson.toJson(event);
         send(json);
-//        InstanceInfo instanceInfo = event.getInstanceInfo();
-//        System.err.println(event.getTimestamp() + " " + instanceInfo.getAppName() + " 进行注册 ");
+        log.info("服务注册 " + json);
     }
 
     @EventListener
@@ -50,7 +54,7 @@ public class EurekaStateChangeListener {
         Gson gson = new Gson();
         String json = gson.toJson(event);
         send(json);
-//        System.err.println(event.getTimestamp() + " " + event.getServerId() + "\t" + event.getAppName() + " 服务进行续约 ");
+        log.info("服务续约 " + json);
     }
 
     @EventListener
@@ -58,7 +62,7 @@ public class EurekaStateChangeListener {
         Gson gson = new Gson();
         String json = gson.toJson(event);
         send(json);
-//        System.err.println(event.getTimestamp() + " " + " 注册中心启动 ");
+        log.info("注册中心启动 " + json);
     }
 
     @EventListener
@@ -66,7 +70,7 @@ public class EurekaStateChangeListener {
         Gson gson = new Gson();
         String json = gson.toJson(event);
         send(json);
-//        System.err.println(event.getTimestamp() + " " + "Eureka Server 启动 ");
+        log.info("Eureka Server 启动 " + json);
     }
 
     private void send(String msg) {
@@ -79,7 +83,7 @@ public class EurekaStateChangeListener {
             postMethod.setEntity(requestEntity);
             HttpResponse rawResponse = httpClient.execute(postMethod);
         } catch (IOException e) {
-            System.err.println(msg + " " + notifyUrl + "\n" + e.toString());
+            log.error(msg + " " + notifyUrl + "\n" + e.toString());
         }
     }
 }
